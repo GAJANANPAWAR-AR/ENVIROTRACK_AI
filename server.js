@@ -232,13 +232,14 @@ async function verifyCleanup(beforeImagePath, afterImagePath) {
 }
 
 // ========== DATABASE ==========
-
+// Use SSL for Render Postgres
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
+    ssl: { rejectUnauthorized: false }
 });
 
 // Auto-create tables on startup
@@ -252,7 +253,7 @@ const createTablesIfNotExist = async () => {
         role VARCHAR(50) DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
-      
+
       CREATE TABLE IF NOT EXISTS waste_reports (
         id SERIAL PRIMARY KEY,
         latitude DECIMAL(10, 8) NOT NULL,
@@ -293,7 +294,6 @@ pool.connect((err, client, release) => {
 });
 
 // ========== MIDDLEWARE ==========
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -492,7 +492,7 @@ app.get('/api/waste-reports/:id', async (req, res) => {
     }
 });
 
-// 6. Clean Report (FIXED: No GPS required, only image similarity)
+// 6. Clean Report (municipal only)
 app.put('/api/clean-report/:id', authenticateToken, upload.single('cleanedImage'), async (req, res) => {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('🧹 CLEANUP SUBMISSION RECEIVED');
@@ -522,20 +522,16 @@ app.put('/api/clean-report/:id', authenticateToken, upload.single('cleanedImage'
         const beforeImagePath = path.join(__dirname, originalReport.image_url);
         const afterImagePath = req.file.path;
 
-        // FIXED: Only pass image paths, no GPS
+        // Only pass image paths, no GPS
         const verification = await verifyCleanup(beforeImagePath, afterImagePath);
 
         const cleanedImageUrl = '/uploads/' + req.file.filename;
 
-        // FIXED: Updated database columns - removed location_match
+        // Update DB with cleanup result
         const result = await pool.query(
             'UPDATE waste_reports SET is_cleaned = TRUE, cleaned_by_user_id = $1, cleaned_image_url = $2, cleaned_at = CURRENT_TIMESTAMP, cleanup_verified = $3, verification_confidence = $4, ai_comparison_result = $5 WHERE id = $6 RETURNING *',
             [req.user.id, cleanedImageUrl, verification.verified, verification.confidence, verification.aiResponse, req.params.id]
         );
-        
-    'DELETE FROM waste_reports WHERE id = $1 RETURNING *',
-    [req.params.id]
-);
 
         console.log('✅ CLEANUP RECORD UPDATED IN DATABASE');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
@@ -561,7 +557,7 @@ app.put('/api/clean-report/:id', authenticateToken, upload.single('cleanedImage'
     }
 });
 
-// 7. Leaderboard (FIXED)
+// 7. Leaderboard
 app.get('/api/leaderboard', async (req, res) => {
     try {
         const result = await pool.query(
