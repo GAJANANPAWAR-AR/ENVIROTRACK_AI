@@ -1,0 +1,578 @@
+/* =========================
+   Elegant Premium Variables
+========================= */
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-soft: #dbeafe;
+  --secondary: #7c3aed;
+  --accent: #f59e0b;
+  --success: #059669;
+  --danger: #dc2626;
+  
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  
+  --bg-primary: #ffffff;
+  --bg-secondary: #fefefe;
+  --bg-soft: #fbfbfb;
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface-glass: rgba(255, 255, 255, 0.6);
+  
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  --border-light: #f3f4f6;
+  --border-medium: #e5e7eb;
+  --border-strong: #d1d5db;
+  
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  
+  --blur-light: 8px;
+  --blur-medium: 16px;
+  --blur-strong: 24px;
+  
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  
+  --transition-fast: all 0.15s ease;
+  --transition-normal: all 0.25s ease;
+  --transition-slow: all 0.35s ease;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================
+   Reset & Base
+========================= */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.03) 1px, transparent 0);
+  background-size: 20px 20px;
+  z-index: -1;
+}
+
+/* =========================
+   Container & Layout
+========================= */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* =========================
+   Elegant Header
+========================= */
+header {
+  background: var(--surface);
+  backdrop-filter: blur(var(--blur-medium));
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl);
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary-soft), transparent);
+}
+
+header:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+header h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.025em;
+}
+
+.header-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* =========================
+   Main Content
+========================= */
+main {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-2xl);
+  padding: 40px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+  overflow: hidden;
+}
+
+main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--primary-soft) 0%, transparent 70%);
+  opacity: 0.5;
+  border-radius: 50%;
+  transform: translate(50%, -50%);
+}
+
+main:hover {
+  box-shadow: var(--shadow-md);
+}
+
+#map {
+  height: 600px;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+  border: 2px solid var(--border-medium);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  transition: var(--transition-smooth);
+  overflow: hidden;
+}
+
+#map::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 49%, rgba(37, 99, 235, 0.02) 50%, transparent 51%);
+  pointer-events: none;
+}
+
+#map:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--primary-light);
+}
+
+/* =========================
+   Elegant Overlay Forms
+========================= */
+.overlay-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--blur-strong));
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-2xl);
+  padding: 48px;
+  box-shadow: var(--shadow-2xl);
+  z-index: 1000;
+  max-width: 560px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.overlay-form h2 {
+  text-align: center;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  letter-spacing: -0.025em;
+}
+
+/* =========================
+   Premium Form Elements
+========================= */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: var(--transition-smooth);
+  outline: none;
+  box-shadow: var(--shadow-xs);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft), var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* =========================
+   Premium Buttons
+========================= */
+button {
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  font-size: 0.975rem;
+  font-weight: 600;
+  padding: 14px 24px;
+  transition: var(--transition-smooth);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  outline: none;
+}
+
+button.primary {
+  background: var(--primary);
+  color: rgb(234, 140, 140);
+  box-shadow: var(--shadow-sm);
+}
+
+button.primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+button.primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+button.secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+button.secondary:hover {
+  background: var(--neutral-50);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+  box-shadow: var(--shadow-sm);
+  float: right;
+}
+
+button.danger:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+button.full {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  margin-top: 24px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* =========================
+   Report Details
+========================= */
+#reportDetailsPopup .details-content {
+  padding: 8px 0;
+}
+
+#reportDetailsPopup .details-content img {
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 16px;
+  width: 100%;
+  height: auto;
+}
+
+#reportDetailsPopup .details-content p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+#reportDetailsPopup .details-content strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* =========================
+   Elegant Leaderboard
+========================= */
+#leaderboardTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 32px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+#leaderboardTable th {
+  background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+  color: var(--text-primary);
+  padding: 20px 24px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-medium);
+}
+
+#leaderboardTable th:first-child {
+  border-top-left-radius: var(--radius-xl);
+}
+
+#leaderboardTable th:last-child {
+  border-top-right-radius: var(--radius-xl);
+}
+
+#leaderboardTable td {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  transition: var(--transition-fast);
+}
+
+#leaderboardTable tbody tr:hover {
+  background: var(--neutral-50);
+  transform: scale(1.005);
+}
+
+#leaderboardTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================
+   Custom Scrollbar
+========================= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-300);
+  border-radius: 4px;
+  transition: var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-400);
+}
+
+/* =========================
+   Responsive Design
+========================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    gap: 24px;
+  }
+  
+  header {
+    padding: 20px 24px;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  main {
+    padding: 24px;
+  }
+  
+  #map {
+    height: 400px;
+  }
+  
+  .overlay-form {
+    padding: 32px 24px;
+    max-width: 100%;
+    margin: 0 16px;
+  }
+  
+  button {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+  
+  #leaderboardTable th,
+  #leaderboardTable td {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+  }
+}
+
+/* =========================
+   Utility Classes
+========================= */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+
+.mt-2 { margin-top: 8px; }
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* =========================
+   Loading States
+========================= */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* =========================
+   Focus Indicators
+========================= */
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}

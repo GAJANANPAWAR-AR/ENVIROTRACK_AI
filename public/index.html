@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnviroTrack - Smart Waste Management</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        header h1::before {
+            content: '🌱';
+            font-size: 1.5rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .header-controls button {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
+        }
+
+        #showReportFormBtn {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        #showReportFormBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #showLeaderboardBtn {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        #showLeaderboardBtn:hover {
+            background: #2563eb;
+        }
+
+        #showMunicipalLoginBtn {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        #showMunicipalLoginBtn:hover {
+            background: #d97706;
+        }
+
+        #logoutBtn {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        #logoutBtn:hover {
+            background: #dc2626;
+        }
+
+        /* Main content */
+        main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Overlay Forms */
+        .overlay-form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .overlay-form h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        button[type="submit"],
+        .close-btn,
+        #capturePhotoBtn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        button[type="submit"]:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .close-btn {
+            background: #6b7280;
+            color: var(--white);
+            margin-top: 0.75rem;
+        }
+
+        .close-btn:hover {
+            background: #4b5563;
+        }
+
+        #capturePhotoBtn {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        #capturePhotoBtn:hover {
+            background: #2563eb;
+        }
+
+        /* Details Content */
+        .details-content {
+            margin-top: 1rem;
+        }
+
+        .details-content p {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .details-content strong {
+            color: var(--dark);
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        /* Municipal Controls */
+        #municipalControls {
+            background: #f9fafb;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        #municipalControls h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        #cleanedDetails {
+            background: #ecfdf5;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Leaderboard Table */
+        #leaderboardTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        #leaderboardTable thead {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        #leaderboardTable th,
+        #leaderboardTable td {
+            padding: 0.875rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #leaderboardTable tbody tr:hover {
+            background: var(--light);
+        }
+
+        #leaderboardTable tbody tr:nth-child(1) {
+            background: #fef3c7;
+            font-weight: 600;
+        }
+
+        #leaderboardTable tbody tr:nth-child(2) {
+            background: #e5e7eb;
+        }
+
+        #leaderboardTable tbody tr:nth-child(3) {
+            background: #fed7aa;
+        }
+
+        /* Images */
+        img,
+        video,
+        canvas {
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 0.875rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--primary);
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.25rem;
+            }
+
+            .header-controls button {
+                padding: 0.5rem 0.875rem;
+                font-size: 0.85rem;
+            }
+
+            .overlay-form {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .overlay-form h2 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .overlay-form::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .overlay-form::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .overlay-form::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .overlay-form::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ENVIROTRACK</h1>
+            <div class="header-controls">
+                <button id="showReportFormBtn">📸 Report Waste</button>
+                <button id="showLeaderboardBtn">🏆 Leaderboard</button>
+                <button id="showMunicipalLoginBtn">🔐 Municipal Login</button>
+                <button id="logoutBtn" style="display: none;">🚪 Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <div id="map"></div>
+
+            <!-- Report Form -->
+            <div id="reportFormContainer" class="overlay-form" style="display: none;">
+                <h2>📝 Report New Waste</h2>
+                <form id="wasteReportForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="wasteImageInput">📷 Capture Waste Image:</label>
+                        <input type="file" id="wasteImageInput" accept="image/*" capture="environment">
+                        <video id="cameraFeed" autoplay style="display: none; width: 100%; max-width: 400px; height: auto; margin-top: 10px;"></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <button type="button" id="capturePhotoBtn" style="display: none;">📸 Capture Photo</button>
+                        <img id="capturedImagePreview" src="" alt="Captured Waste Image" style="display: none; max-width: 100%; height: auto; margin-top: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">📋 Description:</label>
+                        <textarea id="description" placeholder="Describe the waste (e.g., plastic bottles, construction debris)" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportedBy">👤 Reporter Name (optional):</label>
+                        <input type="text" id="reportedBy" placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="latitude">📍 Latitude:</label>
+                        <input type="text" id="latitude" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">📍 Longitude:</label>
+                        <input type="text" id="longitude" readonly required>
+                    </div>
+                    <button type="submit">✅ Submit Report</button>
+                    <button type="button" class="close-btn" onclick="hideAllForms()">✖ Close</button>
+                </form>
+            </div>
+
+            <!-- Report Details Popup -->
+            <div id="reportDetailsPopup" class="overlay-form" style="display: none;">
+                <h2 id="reportDetailsTitle">📄 Waste Report Details</h2>
+                <div class="details-content">
+                    <p><strong>Description:</strong> <span id="popupDescription"></span></p>
+                    <p><strong>Reported By:</strong> <span id="popupReportedBy"></span></p>
+                    <p><strong>Reported At:</strong> <span id="popupReportedAt"></span></p>
+                    <p><strong>Location:</strong> <span id="popupLatitude"></span>, <span id="popupLongitude"></span></p>
+                    <img id="popupWasteImage" src="" alt="Waste Image" style="max-width: 100%; height: auto; margin-top: 10px;">
+
+                    <div id="municipalControls" style="display: none;">
+                        <h3>🔧 Municipal Action</h3>
+                        <form id="cleanReportForm" enctype="multipart/form-data">
+                            <input type="hidden" id="cleanReportId">
+                            <div class="form-group">
+                                <label for="cleanedImageInput">📷 Upload Cleaned Area Photo:</label>
+                                <input type="file" id="cleanedImageInput" accept="image/*" capture="environment" required>
+                            </div>
+                            <button type="submit">✅ Mark as Cleaned</button>
+                        </form>
+                        <div id="cleanedDetails" style="display: none;">
+                            <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">✅ CLEANED</span></p>
+                            <p><strong>Cleaned By:</strong> <span id="popupCleanedBy"></span></p>
+                            <p><strong>Cleaned At:</strong> <span id="popupCleanedAt"></span></p>
+                            <img id="popupCleanedImage" src="" alt="Cleaned Image" style="max-width: 100%; height: auto; margin-top: 10px;">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" onclick="hideAllForms()">✖ Close</button>
+            </div>
+
+            <!-- Municipal Login Form -->
+            <div id="municipalLoginFormContainer" class="overlay-form" style="display: none;">
+                <h2>🔐 Municipal Login</h2>
+                <form id="municipalLoginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">👤 Username:</label>
+                        <input type="text" id="loginUsername" required placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">🔑 Password:</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter password">
+                    </div>
+                    <button type="submit">🚀 Login</button>
+                    <button type="button" class="close-btn" onclick="hideAllForms()">✖ Close</button>
+                </form>
+            </div>
+
+            <!-- Leaderboard -->
+            <div id="leaderboardContainer" class="overlay-form" style="display: none;">
+                <h2>🏆 Top Reporters Leaderboard</h2>
+                <table id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th>🏅 Rank</th>
+                            <th>👤 Reporter</th>
+                            <th>⭐ Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" class="close-btn" onclick="hideAllForms()">✖ Close</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
